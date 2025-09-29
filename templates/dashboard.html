@@ -551,7 +551,10 @@
                 }
                 
                 gallery.innerHTML = images.map(img => `
-                    <div class="gallery-item" onclick="openModal('${img.path}')">
+                    <div class="gallery-item" 
+                         onclick="openModal('${img.path}')"
+                         onmouseenter="showDetectionSensors('${img.filename}')"
+                         onmouseleave="restoreOriginalSensors()">
                         <img src="${img.path}" alt="Detecção" loading="lazy">
                         <div class="gallery-info">
                             <strong>${img.filename}</strong>
@@ -563,6 +566,64 @@
                 console.error('Erro ao carregar galeria:', error);
                 document.getElementById('gallery').innerHTML = 
                     '<div class="no-images">Erro ao carregar imagens.</div>';
+            }
+        }
+
+        // Dados simulados para cada detecção
+        const detectionSensorData = {};
+
+        function generateRandomSensorData() {
+            return {
+                temperature: (20 + Math.random() * 15).toFixed(1),
+                humidity: (40 + Math.random() * 40).toFixed(1),
+                light: Math.floor(150 + Math.random() * 600),
+                motion: Math.random() > 0.5
+            };
+        }
+
+        let originalSensorData = null;
+
+        function showDetectionSensors(imageName) {
+            // Salvar dados originais na primeira vez
+            if (!originalSensorData) {
+                originalSensorData = {
+                    temperature: document.getElementById('temperature').textContent,
+                    humidity: document.getElementById('humidity').textContent,
+                    light: document.getElementById('light').textContent,
+                    motion: document.getElementById('motion').textContent
+                };
+            }
+
+            // Gerar ou recuperar dados para esta detecção
+            if (!detectionSensorData[imageName]) {
+                detectionSensorData[imageName] = generateRandomSensorData();
+            }
+
+            const data = detectionSensorData[imageName];
+
+            // Atualizar valores com animação
+            document.getElementById('temperature').textContent = data.temperature;
+            document.getElementById('humidity').textContent = data.humidity;
+            document.getElementById('light').textContent = data.light;
+            document.getElementById('motion').textContent = data.motion ? 'Detectado' : 'Nenhum';
+
+            // Adicionar efeito visual
+            ['temperature', 'humidity', 'light', 'motion'].forEach(id => {
+                const element = document.getElementById(id);
+                element.style.transition = 'all 0.3s ease';
+                element.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    element.style.transform = 'scale(1)';
+                }, 300);
+            });
+        }
+
+        function restoreOriginalSensors() {
+            if (originalSensorData) {
+                document.getElementById('temperature').textContent = originalSensorData.temperature;
+                document.getElementById('humidity').textContent = originalSensorData.humidity;
+                document.getElementById('light').textContent = originalSensorData.light;
+                document.getElementById('motion').textContent = originalSensorData.motion;
             }
         }
 
