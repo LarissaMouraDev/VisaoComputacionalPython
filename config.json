@@ -1,0 +1,494 @@
+{
+  "system": {
+    "name": "IoT Motorcycle Detection System",
+    "version": "1.0.0",
+    "description": "Sistema integrado de detecção de motocicletas com IoT e visão computacional",
+    "author": "Larissa Moura",
+    "created_date": "2024-09-28"
+  },
+  "mqtt": {
+    "broker": "localhost",
+    "port": 1883,
+    "keepalive": 60,
+    "qos": 1,
+    "client_id": "iot_motorcycle_system",
+    "username": "",
+    "password": "",
+    "topics": {
+      "sensors": {
+        "temperature": "sensors/temperature",
+        "humidity": "sensors/humidity", 
+        "motion": "sensors/motion",
+        "light": "sensors/light"
+      },
+      "detection": "motorcycle/detection",
+      "status": "system/status",
+      "alerts": "system/alerts"
+    },
+    "retry_attempts": 3,
+    "retry_delay": 5,
+    "connection_timeout": 30
+  },
+  "computer_vision": {
+    "detection": {
+      "confidence_threshold": 0.5,
+      "nms_threshold": 0.4,
+      "input_size": [416, 416],
+      "max_detections_per_frame": 10,
+      "classes_of_interest": ["motorcycle", "motorbike", "bicycle"],
+      "tracking_enabled": true,
+      "tracking_max_disappeared": 10,
+      "tracking_max_distance": 50
+    },
+    "models": {
+      "primary": {
+        "type": "yolo",
+        "weights_path": "models/yolov4.weights",
+        "config_path": "models/yolov4.cfg",
+        "names_path": "models/coco.names"
+      },
+      "fallback": {
+        "type": "mobilenet_ssd",
+        "model_path": "models/mobilenet_ssd.caffemodel",
+        "config_path": "models/mobilenet_ssd.prototxt"
+      },
+      "alternative": {
+        "type": "haar_cascade",
+        "classifier_path": "haarcascade_car.xml"
+      }
+    },
+    "video": {
+      "input_source": 0,
+      "fps_limit": 30,
+      "resolution": [1280, 720],
+      "save_output": true,
+      "output_format": "avi",
+      "output_codec": "XVID"
+    },
+    "performance": {
+      "gpu_acceleration": true,
+      "cpu_threads": 4,
+      "memory_limit_mb": 2048,
+      "benchmark_mode": false
+    }
+  },
+  "sensors": {
+    "temperature": {
+      "sensor_id": "temp_001",
+      "unit": "celsius",
+      "min_value": -10,
+      "max_value": 50,
+      "accuracy": 0.1,
+      "sampling_rate": 3,
+      "alert_thresholds": {
+        "min": 0,
+        "max": 35,
+        "critical_max": 40
+      }
+    },
+    "humidity": {
+      "sensor_id": "hum_001",
+      "unit": "percent",
+      "min_value": 0,
+      "max_value": 100,
+      "accuracy": 1,
+      "sampling_rate": 4,
+      "alert_thresholds": {
+        "min": 20,
+        "max": 80,
+        "critical_max": 95
+      }
+    },
+    "motion": {
+      "sensor_id": "mot_001",
+      "unit": "boolean",
+      "sensitivity": "medium",
+      "sampling_rate": 1,
+      "debounce_time": 2,
+      "alert_on_detection": true
+    },
+    "light": {
+      "sensor_id": "light_001",
+      "unit": "lux",
+      "min_value": 0,
+      "max_value": 2000,
+      "accuracy": 5,
+      "sampling_rate": 5,
+      "alert_thresholds": {
+        "min": 50,
+        "max": 1500
+      }
+    }
+  },
+  "database": {
+    "type": "sqlite",
+    "path": "iot_motorcycle_system.db",
+    "backup_enabled": true,
+    "backup_interval": 24,
+    "backup_location": "backups/",
+    "retention_policy": {
+      "sensor_readings_days": 30,
+      "detections_days": 90,
+      "system_events_days": 365
+    },
+    "optimization": {
+      "auto_vacuum": true,
+      "vacuum_interval": 168,
+      "index_optimization": true
+    },
+    "tables": {
+      "sensor_readings": {
+        "primary_key": "id",
+        "indexes": ["timestamp", "sensor_type", "sensor_id"]
+      },
+      "motorcycle_detections": {
+        "primary_key": "id", 
+        "indexes": ["detection_timestamp", "confidence_score"]
+      },
+      "system_events": {
+        "primary_key": "id",
+        "indexes": ["timestamp", "severity_level", "component"]
+      }
+    }
+  },
+  "dashboard": {
+    "web_server": {
+      "host": "0.0.0.0",
+      "port": 5000,
+      "debug": false,
+      "threaded": true,
+      "ssl_enabled": false,
+      "ssl_cert": "",
+      "ssl_key": ""
+    },
+    "socketio": {
+      "cors_allowed_origins": "*",
+      "async_mode": "threading",
+      "ping_timeout": 60,
+      "ping_interval": 25
+    },
+    "interface": {
+      "theme": "modern",
+      "language": "pt-BR",
+      "auto_refresh": true,
+      "refresh_interval": 2000,
+      "chart_update_interval": 1000,
+      "max_data_points": 50
+    },
+    "features": {
+      "real_time_monitoring": true,
+      "alerts_system": true,
+      "data_export": true,
+      "historical_analysis": true,
+      "system_controls": true
+    }
+  },
+  "alerts": {
+    "enabled": true,
+    "channels": ["dashboard", "mqtt", "log"],
+    "severity_levels": ["INFO", "WARNING", "ERROR", "CRITICAL"],
+    "rules": {
+      "temperature_high": {
+        "condition": "temperature > 35",
+        "severity": "WARNING",
+        "message": "Temperatura alta detectada: {value}°C"
+      },
+      "humidity_high": {
+        "condition": "humidity > 80", 
+        "severity": "WARNING",
+        "message": "Umidade muito alta: {value}%"
+      },
+      "multiple_motorcycles": {
+        "condition": "motorcycle_count > 5",
+        "severity": "INFO",
+        "message": "Múltiplas motocicletas detectadas: {count}"
+      },
+      "sensor_offline": {
+        "condition": "sensor_timeout > 30",
+        "severity": "ERROR",
+        "message": "Sensor {sensor_id} offline há {time} segundos"
+      },
+      "low_light": {
+        "condition": "light < 100",
+        "severity": "INFO",
+        "message": "Baixa luminosidade detectada: {value} lux"
+      }
+    },
+    "notification_settings": {
+      "max_alerts_per_minute": 10,
+      "duplicate_suppression": true,
+      "auto_resolve_timeout": 300
+    }
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "file_logging": true,
+    "log_directory": "logs/",
+    "files": {
+      "main": "system.log",
+      "mqtt": "mqtt.log", 
+      "detection": "detection.log",
+      "database": "database.log",
+      "performance": "performance.log"
+    },
+    "rotation": {
+      "max_size_mb": 10,
+      "backup_count": 5,
+      "rotation_interval": "midnight"
+    },
+    "console_output": true,
+    "debug_modules": []
+  },
+  "performance": {
+    "monitoring": {
+      "enabled": true,
+      "metrics_collection": true,
+      "fps_tracking": true,
+      "memory_tracking": true,
+      "cpu_tracking": true
+    },
+    "optimization": {
+      "frame_skip": false,
+      "frame_skip_ratio": 2,
+      "batch_processing": false,
+      "async_processing": true,
+      "threading": {
+        "sensor_threads": 4,
+        "detection_threads": 2,
+        "io_threads": 2
+      }
+    },
+    "limits": {
+      "max_memory_usage_mb": 4096,
+      "max_cpu_usage_percent": 80,
+      "max_gpu_memory_mb": 2048,
+      "max_concurrent_detections": 3
+    }
+  },
+  "test_scenarios": {
+    "enabled": true,
+    "scenarios": {
+      "motorcycle_disappeared": {
+        "name": "Moto Desaparecida",
+        "description": "Simula motocicleta que some do estacionamento",
+        "duration_seconds": 30,
+        "sensors": {
+          "motion": {
+            "pattern": [1, 1, 1, 0, 0, 0],
+            "description": "Movimento detectado inicialmente, depois para"
+          },
+          "light": {
+            "pattern": "decrease",
+            "start_value": 400,
+            "end_value": 150,
+            "description": "Luz diminui gradualmente"
+          },
+          "temperature": {
+            "pattern": "stable",
+            "value": 25,
+            "description": "Temperatura ambiente estável"
+          }
+        },
+        "expected_outcome": "Alerta de possível roubo ou remoção não autorizada"
+      },
+      "wrong_parking": {
+        "name": "Moto no Lugar Errado",
+        "description": "Motocicleta estacionada em local inadequado",
+        "duration_seconds": 45,
+        "sensors": {
+          "motion": {
+            "pattern": [1, 1, 0, 0, 0, 1, 1],
+            "description": "Movimento intermitente"
+          },
+          "temperature": {
+            "pattern": "increase",
+            "start_value": 25,
+            "end_value": 35,
+            "description": "Temperatura sobe (motor quente)"
+          },
+          "humidity": {
+            "pattern": "stable",
+            "value": 65,
+            "description": "Umidade normal"
+          }
+        },
+        "expected_outcome": "Notificação de estacionamento irregular"
+      },
+      "multiple_arrivals": {
+        "name": "Múltiplas Chegadas",
+        "description": "Várias motocicletas chegando simultaneamente",
+        "duration_seconds": 60,
+        "sensors": {
+          "motion": {
+            "pattern": [1, 1, 1, 1, 1],
+            "description": "Movimento constante"
+          },
+          "light": {
+            "pattern": "variable",
+            "min_value": 200,
+            "max_value": 600,
+            "description": "Luz variável devido ao movimento"
+          },
+          "temperature": {
+            "pattern": "stable",
+            "value": 28,
+            "description": "Temperatura ligeiramente elevada"
+          }
+        },
+        "expected_outcome": "Detecção de múltiplos objetos simultaneamente"
+      },
+      "night_mode": {
+        "name": "Modo Noturno",
+        "description": "Operação durante período noturno",
+        "duration_seconds": 120,
+        "sensors": {
+          "light": {
+            "pattern": "low",
+            "value": 50,
+            "description": "Baixa luminosidade"
+          },
+          "temperature": {
+            "pattern": "decrease",
+            "start_value": 25,
+            "end_value": 18,
+            "description": "Temperatura noturna mais baixa"
+          },
+          "motion": {
+            "pattern": [0, 0, 1, 0, 0],
+            "description": "Movimento esporádico"
+          }
+        },
+        "expected_outcome": "Adaptação para condições de baixa luz"
+      },
+      "storm_conditions": {
+        "name": "Condições de Tempestade", 
+        "description": "Simulação de condições climáticas adversas",
+        "duration_seconds": 90,
+        "sensors": {
+          "humidity": {
+            "pattern": "high",
+            "value": 95,
+            "description": "Umidade muito alta"
+          },
+          "light": {
+            "pattern": "low_variable",
+            "min_value": 30,
+            "max_value": 120,
+            "description": "Pouca luz com variações"
+          },
+          "temperature": {
+            "pattern": "decrease",
+            "start_value": 25,
+            "end_value": 20,
+            "description": "Temperatura reduzida"
+          },
+          "motion": {
+            "pattern": [0, 1, 0, 1, 0],
+            "description": "Movimento irregular devido ao vento"
+          }
+        },
+        "expected_outcome": "Sistema mantém funcionamento em condições adversas"
+      }
+    },
+    "automation": {
+      "auto_run_tests": false,
+      "test_interval_hours": 24,
+      "generate_reports": true,
+      "report_format": ["json", "csv", "html"]
+    }
+  },
+  "security": {
+    "authentication": {
+      "enabled": false,
+      "method": "basic",
+      "users": [],
+      "session_timeout": 3600
+    },
+    "encryption": {
+      "mqtt_tls": false,
+      "web_https": false,
+      "database_encryption": false
+    },
+    "access_control": {
+      "ip_whitelist": [],
+      "rate_limiting": true,
+      "max_requests_per_minute": 100
+    }
+  },
+  "integration": {
+    "external_apis": {
+      "weather_service": {
+        "enabled": false,
+        "api_key": "",
+        "update_interval": 3600
+      },
+      "notification_service": {
+        "enabled": false,
+        "webhook_url": "",
+        "retry_attempts": 3
+      }
+    },
+    "export_formats": ["csv", "json", "excel"],
+    "backup_destinations": ["local", "cloud"],
+    "cloud_storage": {
+      "provider": "",
+      "bucket": "",
+      "credentials": ""
+    }
+  },
+  "development": {
+    "debug_mode": false,
+    "test_mode": false,
+    "mock_sensors": true,
+    "mock_camera": false,
+    "profiling": {
+      "enabled": false,
+      "output_format": "cProfile",
+      "output_file": "profile_results.prof"
+    },
+    "hot_reload": false
+  },
+  "deployment": {
+    "environment": "development",
+    "container_support": true,
+    "docker": {
+      "image_name": "iot-motorcycle-detection",
+      "tag": "latest",
+      "expose_ports": [5000, 1883],
+      "volumes": ["./data:/app/data", "./logs:/app/logs"]
+    },
+    "kubernetes": {
+      "namespace": "iot-system",
+      "replicas": 1,
+      "resources": {
+        "cpu_limit": "1000m",
+        "memory_limit": "2Gi",
+        "cpu_request": "500m", 
+        "memory_request": "1Gi"
+      }
+    }
+  },
+  "maintenance": {
+    "auto_cleanup": {
+      "enabled": true,
+      "schedule": "0 2 * * *",
+      "retention_days": 30
+    },
+    "health_checks": {
+      "enabled": true,
+      "interval_seconds": 60,
+      "endpoints": [
+        "/health",
+        "/metrics",
+        "/status"
+      ]
+    },
+    "backup": {
+      "auto_backup": true,
+      "backup_schedule": "0 3 * * *",
+      "compression": true,
+      "encryption": false
+    }
+  }
+}

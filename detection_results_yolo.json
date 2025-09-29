@@ -1,0 +1,92 @@
+[
+  {
+    "image_path": "static/images\\motom.jpg",
+    "all_detections": [
+      {
+        "class_id": "3",
+        "class_name": "motorbike",
+        "confidence": 0.9967570900917053,
+        "bbox": [
+          2,
+          39,
+          229,
+          148
+        ]
+      }
+    ],
+    "motorcycles": [
+      {
+        "class_id": "3",
+        "class_name": "motorbike",
+        "confidence": 0.9967570900917053,
+        "bbox": [
+          2,
+          39,
+          229,
+          148
+        ]
+      }
+    ],
+    "motorcycle_count": 1
+  },
+  {
+    "image_path": "static/images\\mottu-e-eletrica.jpg",
+    "all_detections": [
+      {
+        "class_id": "3",
+        "class_name": "motorbike",
+        "confidence": 0.9998984336853027,
+        "bbox": [
+          108,
+          74,
+          819,
+          794
+        ]
+      }
+    ],
+    "motorcycles": [
+      {
+        "class_id": "3",
+        "class_name": "motorbike",
+        "confidence": 0.9998984336853027,
+        "bbox": [
+          108,
+          74,
+          819,
+          794
+        ]
+      }
+    ],
+    "motorcycle_count": 1
+  },
+  {
+    "image_path": "static/images\\mottu-sport-1_03102022_50803_632_474.jpg",
+    "all_detections": [
+      {
+        "class_id": "3",
+        "class_name": "motorbike",
+        "confidence": 0.9995080232620239,
+        "bbox": [
+          55,
+          40,
+          525,
+          393
+        ]
+      }
+    ],
+    "motorcycles": [
+      {
+        "class_id": "3",
+        "class_name": "motorbike",
+        "confidence": 0.9995080232620239,
+        "bbox": [
+          55,
+          40,
+          525,
+          393
+        ]
+      }
+    ],
+    "motorcycle_count": 1
+  }
+]

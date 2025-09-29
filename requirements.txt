@@ -1,0 +1,105 @@
+# Dependências principais do projeto IoT de Detecção de Motocicletas
+
+# Visão Computacional
+opencv-python==4.8.1.78
+opencv-contrib-python==4.8.1.78
+numpy==1.24.3
+
+# Machine Learning / Deep Learning
+tensorflow==2.13.0
+torch==2.0.1
+torchvision==0.15.2
+ultralytics==8.0.186
+
+# Comunicação IoT
+paho-mqtt==1.6.1
+pyserial==3.5
+
+# Web Framework e Dashboard
+Flask==2.3.3
+Flask-SocketIO==5.3.6
+python-socketio==5.8.0
+python-engineio==4.7.1
+
+# Banco de Dados
+sqlite3
+pandas==2.0.3
+sqlalchemy==2.0.20
+
+# Processamento de Dados
+scipy==1.11.2
+scikit-learn==1.3.0
+matplotlib==3.7.2
+seaborn==0.12.2
+
+# Utilitários
+requests==2.31.0
+python-dateutil==2.8.2
+pytz==2023.3
+pillow==10.0.0
+
+# Logging e Monitoramento
+loguru==0.7.2
+
+# Desenvolvimento e Testes
+pytest==7.4.2
+pytest-cov==4.1.0
+black==23.7.0
+flake8==6.0.0
+
+# Configuração e ambiente
+python-dotenv==1.0.0
+configparser==5.3.0
+
+# Processamento de imagem adicional
+imageio==2.31.2
+scikit-image==0.21.0
+
+# Comunicação HTTP
+httpx==0.24.1
+aiohttp==3.8.5
+
+# Formatação de data/hora
+arrow==1.2.3
+
+# Threading e async
+asyncio
+concurrent.futures
+
+# Matemática e estatística
+statsmodels==0.14.0
+
+# Serialização
+pickle5==0.0.12
+joblib==1.3.2
+
+# Interface gráfica (opcional)
+tkinter
+PyQt5==5.15.9
+
+# Monitoramento do sistema
+psutil==5.9.5
+GPUtil==1.4.0
+
+# Compressão e arquivos
+zipfile36==0.1.3
+tarfile
+
+# Validação de dados
+jsonschema==4.19.0
+marshmallow==3.20.1
+
+# Criptografia (para segurança MQTT)
+cryptography==41.0.4
+pycrypto==2.6.1
+
+# Geolocalização
+geopy==2.3.0
+
+# Cache e performance
+redis==4.6.0
+memcached==1.6.21
+
+# Documentação
+sphinx==7.1.2
+sphinx-rtd-theme==1.3.0

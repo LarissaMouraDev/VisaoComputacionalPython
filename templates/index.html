@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MotoScan - Sistema IoT de Monitoramento de Motos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #000000ff;
+            background-color: #b2c9eeff;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            max-height: 80px;
+            margin-bottom: 15px;
+        }
+        
+        h1 {
+            color: #0c345bff;
+            margin: 0 0 10px;
+        }
+        
+        .upload-section {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .file-input {
+            margin-bottom: 20px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            display: block;
+            margin: 20px auto;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(116, 146, 178, 0.2);
+        }
+        
+        .results-section {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(235, 173, 173, 0.1);
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .results-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .result-item {
+            background-color: #cae1f9ff;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #88c1e7ff;
+        }
+        
+        .result-label {
+            font-weight: bold;
+            color: #88b7ebff;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .result-value {
+            font-size: 1.1em;
+            color: #67a9ebff;
+        }
+        
+        .ai-reports {
+            margin-top: 30px;
+        }
+        
+        .ai-report {
+            background-color: #b1d3faff;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .report-content {
+            white-space: pre-line;
+            line-height: 1.6;
+        }
+        
+        .maintenance-schedule {
+            background-color: #73c38dff;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2ecc71;
+        }
+        
+        .schedule-item {
+            margin-bottom: 10px;
+        }
+        
+        .schedule-label {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .tab-container {
+            margin-top: 20px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+            overflow-x: auto;
+        }
+        
+        .tab-button {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+        }
+        
+        .tab-button.active {
+            color: #3498db;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 15px 0;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .ai-query-section {
+            margin-top: 30px;
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .query-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .query-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .query-response {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            white-space: pre-line;
+        }
+        
+        /* IoT Dashboard Styles */
+        .iot-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .motorcycle-map {
+            height: 300px;
+            background-color: #eee;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-style: italic;
+        }
+        
+        .sensor-card {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .sensor-card h5 {
+            margin-top: 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .sensor-value {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .sensor-reading.warning {
+            color: #e74c3c;
+        }
+        
+        .sensor-reading.active {
+            color: #2ecc71;
+        }
+        
+        #recent-alerts {
+            margin-top: 10px;
+        }
+        
+        .alert-item {
+            padding: 10px;
+            background-color: #ffe5e5;
+            border-left: 4px solid #e74c3c;
+            margin-bottom: 8px;
+            border-radius: 4px;
+        }
+        
+        @media (max-width: 768px) {
+            .results-container, .iot-dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .query-form {
+                flex-direction: column;
+            }
+            
+            .tab-buttons {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="MotoScan Logo" class="logo">
+            <h1>MotoScan - Sistema de Detecção de Motos</h1>
+            <p>Tecnologias IoT e Visão Computacional para monitoramento inteligente</p>
+        </header>
+        
+        <section class="upload-section">
+            <h2>Análise de Motos</h2>
+            <p>Faça upload de uma foto da moto para análise automatizada:</p>
+            
+            <form id="upload-form" class="upload-form" enctype="multipart/form-data">
+                <div class="file-input">
+                    <input type="file" name="image" id="image-input" accept="image/*">
+                </div>
+                
+                <button type="submit">Analisar Moto</button>
+            </form>
+            
+            <img id="image-preview" class="image-preview" style="display: none;">
+        </section>
+        
+        <section id="results-section" class="results-section">
+            <h2>Resultados da Análise</h2>
+            
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-button active" data-tab="basic-info">Informações Básicas</button>
+                    <button class="tab-button" data-tab="ai-report">Relatório IA</button>
+                    <button class="tab-button" data-tab="maintenance">Plano de Manutenção</button>
+                    <button class="tab-button" data-tab="iot-data">Monitoramento IoT</button>
+                </div>
+                
+                <div id="basic-info" class="tab-content active">
+                    <div class="results-container">
+                        <div class="result-item">
+                            <span class="result-label">Modelo:</span>
+                            <span id="model-result" class="result-value">-</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Placa:</span>
+                            <span id="plate-result" class="result-value">-</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Estado:</span>
+                            <span id="condition-result" class="result-value">-</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Localização:</span>
+                            <span id="location-result" class="result-value">-</span>
+                        </div>
+                    </div>
+                    
+                    <div class="technical-details">
+                        <h3>Detalhes Técnicos</h3>
+                        <div id="technical-details" class="results-container"></div>
+                    </div>
+                </div>
+                
+                <div id="ai-report" class="tab-content">
+                    <div class="ai-report">
+                        <h3>Relatório Gerado por IA</h3>
+                        <div id="ai-report-content" class="report-content"></div>
+                    </div>
+                </div>
+                
+                <div id="maintenance" class="tab-content">
+                    <div class="maintenance-schedule">
+                        <h3>Plano de Manutenção Recomendado</h3>
+                        <div id="maintenance-schedule-content">
+                            <!-- Preenchido via JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="iot-data" class="tab-content">
+                    <h3>Monitoramento em Tempo Real</h3>
+                    <div class="iot-dashboard">
+                        <div class="motorcycle-map" id="motorcycle-map">
+                            Mapa de localização das motos (simulado)
+                        </div>
+                        <div class="sensor-data">
+                            <h4>Dados dos Sensores</h4>
+                            <div id="sensor-readings"></div>
+                            <h4>Alertas Recentes</h4>
+                            <div id="recent-alerts">
+                                <div class="alert-item">
+                                    <strong>Alerta:</strong> Temperatura elevada na Moto 2
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="ai-query-section" class="ai-query-section" style="display: none;">
+            <h2>Pergunte à IA</h2>
+            <p>Faça perguntas em linguagem natural sobre a moto analisada:</p>
+            
+            <div class="query-form">
+                <input type="text" id="query-input" class="query-input" placeholder="Ex: Quanto tempo levará para manutenção desta moto?">
+                <button id="query-button">Perguntar</button>
+            </div>
+            
+            <div id="query-response" class="query-response" style="display: none;"></div>
+        </section>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos do DOM
+            const uploadForm = document.getElementById('upload-form');
+            const imageInput = document.getElementById('image-input');
+            const imagePreview = document.getElementById('image-preview');
+            const resultsSection = document.getElementById('results-section');
+            const aiQuerySection = document.getElementById('ai-query-section');
+            
+            // Elementos de resultado
+            const modelResult = document.getElementById('model-result');
+            const plateResult = document.getElementById('plate-result');
+            const conditionResult = document.getElementById('condition-result');
+            const locationResult = document.getElementById('location-result');
+            const technicalDetails = document.getElementById('technical-details');
+            const aiReportContent = document.getElementById('ai-report-content');
+            const maintenanceScheduleContent = document.getElementById('maintenance-schedule-content');
+            
+            // Query IA
+            const queryInput = document.getElementById('query-input');
+            const queryButton = document.getElementById('query-button');
+            const queryResponse = document.getElementById('query-response');
+            
+            // Dados da moto (para uso com a API de IA)
+            let currentMotorcycleData = null;
+            
+            // Exibir preview da imagem
+            imageInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Processar envio do formulário
+            uploadForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                const formData = new FormData(uploadForm);
+                
+                // Verificar se uma imagem foi selecionada
+                if (imageInput.files.length === 0) {
+                    alert('Por favor, selecione uma imagem para análise.');
+                    return;
+                }
+                
+                // Mostrar indicador de carregamento
+                document.body.style.cursor = 'wait';
+                
+                // Enviar para o servidor
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Processar a resposta
+                    if (data.error) {
+                        alert('Erro: ' + data.error);
+                        return;
+                    }
+                    
+                    // Armazenar dados da moto para uso com IA
+                    currentMotorcycleData = data.results;
+                    
+                    // Exibir resultados básicos
+                    modelResult.textContent = data.results.modelo || 'Não detectado';
+                    plateResult.textContent = data.results.placa || 'Não detectado';
+                    conditionResult.textContent = data.results.estado || 'Não detectado';
+                    locationResult.textContent = data.results.localizacao || 'Não detectado';
+                    
+                    // Destaque para condição com cores
+                    if (data.results.estado) {
+                        if (data.results.estado === 'bom') {
+                            conditionResult.style.color = '#2ecc71'; // Verde
+                        } else if (data.results.estado.includes('urgente')) {
+                            conditionResult.style.color = '#e74c3c'; // Vermelho
+                        } else {
+                            conditionResult.style.color = '#f39c12'; // Amarelo/laranja
+                        }
+                    }
+                    
+                    // Exibir detalhes técnicos
+                    const techDetails = data.results.detalhes_tecnicos;
+                    technicalDetails.innerHTML = '';
+                    if (techDetails) {
+                        for (const [key, value] of Object.entries(techDetails)) {
+                            const detailItem = document.createElement('div');
+                            detailItem.className = 'result-item';
+                            detailItem.innerHTML = `
+                                <span class="result-label">${formatKey(key)}:</span>
+                                <span class="result-value">${value}</span>
+                            `;
+                            technicalDetails.appendChild(detailItem);
+                        }
+                    }
+                    
+                    // Exibir relatório IA
+                    if (data.results.ia_report && data.results.ia_report.relatório) {
+                        aiReportContent.innerHTML = data.results.ia_report.relatório;
+                    } else {
+                        aiReportContent.innerHTML = '<p>Não foi possível gerar o relatório de IA.</p>';
+                    }
+                    
+                    // Exibir plano de manutenção
+                    if (data.results.maintenance_schedule) {
+                        const schedule = data.results.maintenance_schedule;
+                        let scheduleHTML = '';
+                        
+                        for (const [key, value] of Object.entries(schedule)) {
+                            if (key === 'verificações_recomendadas' && Array.isArray(value)) {
+                                scheduleHTML += `<div class="schedule-item">
+                                    <div class="schedule-label">Verificações Recomendadas:</div>
+                                    <ul>
+                                        ${value.map(item => `<li>${item}</li>`).join('')}
+                                    </ul>
+                                </div>`;
+                            } else {
+                                scheduleHTML += `<div class="schedule-item">
+                                    <div class="schedule-label">${formatKey(key)}:</div>
+                                    <div>${value}</div>
+                                </div>`;
+                            }
+                        }
+                        
+                        maintenanceScheduleContent.innerHTML = scheduleHTML;
+                    } else {
+                        maintenanceScheduleContent.innerHTML = '<p>Não foi possível gerar o plano de manutenção.</p>';
+                    }
+                    
+                    // Mostrar seções de resultados
+                    resultsSection.style.display = 'block';
+                    aiQuerySection.style.display = 'block';
+                    
+                    // Rolar até os resultados
+                    resultsSection.scrollIntoView({ behavior: 'smooth' });
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Ocorreu um erro ao processar a imagem. Tente novamente.');
+                })
+                .finally(() => {
+                    // Restaurar cursor
+                    document.body.style.cursor = 'default';
+                });
+            });
+            
+            // Consulta à IA
+            queryButton.addEventListener('click', function() {
+                const query = queryInput.value.trim();
+                
+                if (!query) {
+                    alert('Por favor, digite uma pergunta.');
+                    return;
+                }
+                
+                // Mostrar indicador de carregamento
+                document.body.style.cursor = 'wait';
+                queryButton.disabled = true;
+                
+                fetch('/api/ai/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        query: query,
+                        motorcycle_data: currentMotorcycleData
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Erro: ' + data.error);
+                        return;
+                    }
+                    
+                    queryResponse.textContent = data.response;
+                    queryResponse.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Ocorreu um erro ao processar sua pergunta. Tente novamente.');
+                })
+                .finally(() => {
+                    document.body.style.cursor = 'default';
+                    queryButton.disabled = false;
+                });
+            });
+            
+            // Guias (tabs)
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remover classe ativa de todos os botões e conteúdos
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // Adicionar classe ativa ao botão clicado
+                    button.classList.add('active');
+                    
+                    // Mostrar conteúdo correspondente
+                    const tabId = button.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                    
+                    // Se a tab for de dados IoT, carregar dados
+                    if (tabId === 'iot-data') {
+                        loadIoTData();
+                    }
+                });
+            });
+            
+            // Função para formatar chaves dos objetos
+            function formatKey(key) {
+                return key
+                    .replace(/_/g, ' ')
+                    .replace(/\b\w/g, letter => letter.toUpperCase());
+            }
+            
+            // Função para carregar dados IoT
+            function loadIoTData() {
+                fetch('/api/iot/data')
+                    .then(response => response.json())
+                    .then(data => {
+                        const sensorReadings = document.getElementById('sensor-readings');
+                        sensorReadings.innerHTML = '';
+                        
+                        for (const [motoId, motoData] of Object.entries(data)) {
+                            const card = document.createElement('div');
+                            card.className = 'sensor-card';
+                            
+                            card.innerHTML = `
+                                <h5>${motoData.modelo || 'Moto ' + motoId.split('_')[1]}</h5>
+                                <div class="sensor-value">
+                                    <span class="sensor-label">Temperatura:</span>
+                                    <span class="sensor-reading ${motoData.temperature > 85 ? 'warning' : ''}">${motoData.temperature.toFixed(1)}°C</span>
+                                </div>
+                                <div class="sensor-value">
+                                    <span class="sensor-label">Combustível:</span>
+                                    <span class="sensor-reading ${motoData.fuel_level < 20 ? 'warning' : ''}">${motoData.fuel_level.toFixed(1)}%</span>
+                                </div>
+                                <div class="sensor-value">
+                                    <span class="sensor-label">Bateria:</span>
+                                    <span class="sensor-reading">${motoData.battery.toFixed(1)}%</span>
+                                </div>
+                                <div class="sensor-value">
+                                    <span class="sensor-label">Status:</span>
+                                    <span class="sensor-reading ${motoData.is_moving ? 'active' : ''}">${motoData.is_moving ? 'Em movimento' : 'Parada'}</span>
+                                </div>
+                            `;
+                            
+                            sensorReadings.appendChild(card);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro ao carregar dados IoT:', error);
+                    });
+                
+                // Recarregar a cada 3 segundos para simular atualização em tempo real
+                setTimeout(loadIoTData, 3000);
+            }
+        });
+    </script>
+</body>
+</html>

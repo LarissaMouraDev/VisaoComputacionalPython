@@ -1,0 +1,29 @@
+# Arquivos YOLO (não versionar - baixar via download_models.py)
+models/*.weights
+models/*.cfg
+models/*.names
+
+# Banco de dados SQLite
+*.db
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.Python
+
+# Imagens processadas
+static/detections/*
+static/images/*
+
+# Manter estrutura de pastas
+!static/detections/.gitkeep
+!static/images/.gitkeep
+!models/.gitkeep
+
+# VS Code
+.vscode/
+
+# Environment
+venv/
+env/
